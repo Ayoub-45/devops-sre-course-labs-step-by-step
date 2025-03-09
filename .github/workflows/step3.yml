@@ -1,23 +1,48 @@
 name: Pipeline
 
 on: [push]
+
 env:
   APPLICATION_NAME: flaskapp
+
 jobs:
   lint:
     runs-on: ubuntu-22.04
     steps:
-    - uses: actions/checkout@v3
-    - name: Setup Python environment
-      uses: actions/setup-python@v4
-      with:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Python Environment
+        uses: actions/setup-python@v4
+        with:
           python-version: "3.10"
-    - name: Install requirements
-      run: pip install --quiet --requirement requirements.txt
-    - name: Lint code
-      run: |
-        flake8 --ignore=E501,E231 *.py
-        pylint --disable=C0301 --disable=C0326 test_app.py
-    - name: Run unit tests
-      run: |
-        python3 -m unittest --verbose --failfast
+          cache: "pip"  # Caches dependencies
+
+      - name: Install Dependencies
+        run: |
+          if [ -f requirements.txt ]; then pip install --quiet --requirement requirements.txt; fi
+
+      - name: Lint Code
+        run: |
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          pylint --fail-under=7 --disable=C0301,C0326 *.py
+
+  test:
+    runs-on: ubuntu-22.04
+    needs: lint  # Runs only if linting passes
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Python Environment
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+          cache: "pip"
+
+      - name: Install Dependencies
+        run: |
+          if [ -f requirements.txt ]; then pip install --quiet --requirement requirements.txt; fi
+
+      - name: Run Unit Tests
+        run: python3 -m unittest discover -s tests -p "test_*.py" --verbose --failfast
