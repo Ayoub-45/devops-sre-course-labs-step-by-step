@@ -10,11 +10,11 @@ APP = Flask(__name__,template_folder='templates')
 
 
 @APP.route('/')
-def home():
-    '''
+    def home():
+        '''
     Rendering Home Page
-    '''
-    return render_template('index.html')
+        '''
+        return render_template('index.html')
 
 
 @APP.route('/hello',methods=['POST'])
