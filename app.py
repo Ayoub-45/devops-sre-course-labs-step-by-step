@@ -10,7 +10,7 @@ APP = Flask(__name__,template_folder='templates')
 
 
 @APP.route('/')
-    def home():
+def home():
         '''
     Rendering Home Page
         '''
