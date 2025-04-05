@@ -10,5 +10,5 @@ EXPOSE 8080
 
 # execute the Flask app
 ENTRYPOINT ["python"]
-HEALTHCHECK CMD curl --fail http://localhost:8080/ || exit 1
+HEALTHCHECK CMD curl --fail http://localhost:8090/ || exit 1
 CMD ["/app/app.py"]
